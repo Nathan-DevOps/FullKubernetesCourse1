@@ -1,0 +1,56 @@
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: webserver
+  labels:
+    app: webserver
+
+spec:
+  ports:
+  - port: 80
+# This is the value of pods container port
+  selector:
+# is used to help service to select pod with thier lebel. in our example we are looking for pod with label "app=webserver"
+    app: webserver
+# we are telling server that the pod lebel is "app=webserver". so our server will target the pod with lable "app=webserver"
+  type: NodePort
+# We are telling kubernetes how we want to expose our service. there are three way ways in which we can expose services
+# 1. NODEPORT: NodePort allocates a port over this service on each node in the cluster. this help us to send a request to any node in the cluster on the designated port. so that are able to reach the Service. 
+# The designated port will be chosen from the set of available ports on the nodes (the value is between 30,000 and 32,767), unless you specify a NodePort as part of the specs ports.
+
+
+
+# COMMAND COMMAND WE USED IN THIS FILE.
+# 1. kubectl create -f 2-1.yml
+# 1. kubectl create -f 2-2.yml
+# 3. kubectl get services     here we get one important value which "80:32465/TCP". so our NodePort is automatically assigned by kubernetes with the value "32465"
+# 2. kubectl describe services
+# 3. kubectl describe services | more
+# 4. kubectl describe nodes     ..... is used to get more info about the node and InternalIP adress for nodes which is called nodeIP. (192.168.49.2) 
+
+
+
+# INFORMATION WE GET WHILE WE RUN THE COMMAND "kubectl get services"
+# 1. CLUSTER-IP: this is our internal IP for each service
+# 2. PORT(S): NodePort allocates a port over this service on each node in the cluster. (the value is between 30,000 and 32,767)
+
+
+
+
+
+
+# INFORMATION WE GET WHILE WE RUN THE COMMAND "kubectl describe services"
+# 1. Endpoints:                10.244.0.22:80
+# is the address of each Pod in the selected group, along with a container port. Kubernetes automatically adds and removes these endpoints as matching Pods are created and deleted
+
+
+# at this point we get everything we want to comminucate with our application. to comminucate with our app we can run below command in our terminal
+# curl nodeIP:servicePort (curl 192.168.49.2:32465)
+
+
+
+
+# IN THIS CHAPTER BE LEARN BELOW MAIN POINTS
+# 1. # Services allow us to expose Pods using a static address, even though the addresses of the underlying Pods may be changing
+# 2. We used a NodePort and NodeInternalIP to gain access to the service from outside of the cluster on a static Port that is reserved on each node in the cluster.

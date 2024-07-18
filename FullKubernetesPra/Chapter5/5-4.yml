@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: support-tier
+  labels:
+    app: microservices
+    tier: support
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      tier: support
+  template:
+    metadata: # we dont need name for this metadate becouse kubernetes will automatically generate unique name them.
+      labels:
+        app: microservices
+        tier: support
+    spec:
+        containers:
+
+        - name: counter
+          image: lrakai/microservices:counter-v1
+          env:
+            - name: API_URL
+              # DNS for service discovery
+              # Naming pattern:
+              #   IP address: <service_name>.<service_namespace>
+              #   Port: needs to be extracted from SRV DNS record
+              value: http://app-tier.deployments:8080
+
+        - name: poller
+          image: lrakai/microservices:poller-v1
+          env:
+            - name: API_URL
+              # omit namespace to only search in the same namespace
+              value: http://app-tier:$(APP_TIER_SERVICE_PORT)
+
+
+
+
+# COMMAND WE USE FOR THIS TEST
+
+# 1. kubectl create -f 5-1.yml
+# 2. kubectl create -n deployments -f 5-2.yml 5-3.yml 5-4.yml
+# 3. kubectl get -n deployments deployments  .... to get our "deployments" ....  as you see we have 3 "deployments"
+# 4. kubectl -n deployments get pods  .....  this give you pods with their name. also "READY=1/1"   "you may see pods with some rondom number. remember, # we dont need name for this metadate becouse kubernetes will automatically generate unique name them.  "
+# 5. kubectl scale -n deployments deployments support-tier --replicas=5  ...... as you know we have 1 replicas in our manifest file. we can chnage 1 to 5 in manifaste file to scale our poda and we run "apply" command. also we can use this command.
+# 6. kubectl -n deployments get pods  ..... as you see we have 5 support-tier pods, 1 app-tier and 1 data-tier. also support-tier "also "READY=2/2"
+# 7. kubectl delete -n deployments pods support-tier-SomeRondomNumber(pods name)    this is used to delete pods.
+# 8. kubectl -n deployments get pods   as you see kubernetes bring the deleted pods to live. 
+# 9. kubectl scale -n deployments deployments app-tier --replicas=5
+# 10. kubectl -n deployments get pods    ..... as you see we have 5 support-tier pods, 5 app-tier and 1 data-tier. also support-tier "also "READY=2/2". from this we understand that Kubernetes did all the heavy lifting for us, and now we can confirm that the app tier service is load balancing requests across the app tier pods.
+# 11. kubectl describe -n deployments service app-tie  .... As you we see we have 5 EndPoints

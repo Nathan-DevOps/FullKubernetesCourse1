@@ -1,0 +1,52 @@
+# All manifests have the same top level keys, API version, kind, and metadata followed by the spec.
+
+apiVersion: v1
+# Kubernetes supports multiple API versions. in this ApiVersion: v1, conatain common resources such as pods and nodes
+kind: Pod
+# this is the resource we want to create in the given apiVersion.
+metadata:
+# is the place whe we give detail information about our resource we wnat to create. example name, labels ...
+  name: mypod1
+# this is name of our resource. name is the minimum metadata we give to our resource
+spec:
+# this is the specification for our resource. 
+  containers:
+# this is the first specification for our resouce. that mean, the resource pod will run the container. 
+  - name: mycontainer1
+# this is name for our container
+    image: nginx:latest
+# this is our image. as we now to run the container, we need docker image.
+
+
+
+
+# COMMAND COMMAND WE USED IN THIS FILE.
+# 1. kubectl create -f 1-1.yml
+# 3. kubectl get pod
+# 2. kubectl describe pod
+# 3. kubectl describe pod | more
+
+
+
+
+# INFORMATION WE GET WHILE WE RUN THE COMMAND "kubectl describe pod"
+# 1. Namespace:        default
+# Our pod is grouped under namespace "default"
+
+# 2. Status:           Running
+# The image and container are ready
+
+# 3. IP:               10.244.0.17
+# This is our "Pod IP" No matter how many containers we have in one pods, we have only one IP for that pod.
+
+# 4. Labels:           <none>
+# Check them in next lesson
+
+# 5. Port:             <none>
+# Check them in next lesson
+
+# 6. Host Port:        <none>
+# Check them in next lesson
+
+# 7. QoS Class:        BestEffort
+# this means that we didnt define our resource utilization. so the kuberneteswill assign to any availble pod. 

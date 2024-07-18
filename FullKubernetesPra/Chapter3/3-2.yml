@@ -1,0 +1,60 @@
+# It's a simple application that increments and prints a counter. It's split into 4 containers across 3 tiers (application tier, data tier and support tier). 
+# The application tier (server container) is conatiner simple Node.js Application. this application accept post request from couter conatiner to incriment counter and get request from pollar to retrieve the current value of the counter. this value is stored in redis container.
+# Application tier = Server Container
+# Data tier = redis container
+# Support tier = Counter Container (post reques) and Pollar Container (get request)
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: app
+spec:
+  containers:
+    - name: redis
+      image: redis:latest
+# its not good idea to use the latest version of the image in lubernates. becouse kubernates is always pull the letest version every time  Pod started. as we know latest vesion of the image is chnaged over time. this mya couse a bug.
+      imagePullPolicy: IfNotPresent
+# this the policy used to privent kuberntes to pull latest version. this policy are telling kubernetes only to pull latest version of redis image only if it didnt find in the pod.
+      ports:
+        - containerPort: 6379
+
+# port "6379" standard Redis port.
+
+    - name: server
+      image: lrakai/microservices:server-v1
+      ports:
+        - containerPort: 8080
+# The server runs on port 8080
+      env:
+        - name: REDIS_URL
+          value: redis://localhost:6379
+
+# "env" is the environmental variabl used server to connect to the data tier (redis)
+# All containers in the same Pod,  share the same network stack and same IP address. So, we can reach other containers in the same Pod on thier local host at their declared container port.
+
+    - name: counter
+      image: lrakai/microservices:counter-v1
+      env:
+        - name: API_URL
+          value: http://localhost:8080
+
+    - name: poller
+      image: lrakai/microservices:poller-v1
+      env:
+        - name: API_URL
+          value: http://localhost:8080
+
+
+
+
+# COMMAND COMMAND WE USED IN THIS FILE.
+# 1. kubectl create -f 3-1.yml
+# 2. kubectl get namespace
+# 3. kubectl create -f 3-2.yml -n microservice 
+# 4. kubectl describe pods -n microservice
+# 5. kubectl logs -n microservice app poller    ..... to see the logs of pollar container
+# 6. kubectl logs -n microservice app counter --tail 10   .... to see the resent "10" logs from counter container
+# 7. kubectl logs -n microservice app poller -f   ....  is used to get the logs live. "-f" means folow
+
+
+# as we see our log shows that our app is running which means that our application is working as expected. 

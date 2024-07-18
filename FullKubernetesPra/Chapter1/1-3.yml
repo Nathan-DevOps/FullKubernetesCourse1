@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mypod3
+  labels:
+# Labels are key value pairs that identify resource attributes. also help us further filter down your resources
+    app: webserver
+# labels are used to make selections in Kubernetes. For example, you could tell kubectl to get only resources in the US West region.
+
+spec:
+  containers:
+  - name: mycontainer3
+    image: nginx:latest
+    ports:
+      - containerPort: 80
+
+
+
+
+
+# COMMAND COMMAND WE USED IN THIS FILE.
+# 1. kubectl create -f 1-2.yml
+# 3. kubectl get pod mypod2
+# 2. kubectl describe pod mypod2
+# 3. kubectl describe pod | more
+
+
+
+
+# INFORMATION WE GET WHILE WE RUN THE COMMAND "kubectl describe pod"
+# 1. Namespace:        default
+# Our pod is grouped under namespace "default"
+
+# 2. Status:           Running
+# The image and container are ready
+
+# 3. IP:               10.244.0.18
+# This is our "Pod IP" No matter how many containers we have in one pods, we have only one IP for that pod.
+
+# 4. Labels:           Labels:           app=webserver
+# as you see now, our resource have labeles.
+
+# 5. Port:             80/TCP
+# this is the port we assign to our docker image.
+# at this point we may think to try to interact with our webserver on the termonal (10.244.0.18:80) or localhost:80. but this is not going to work. why? becouse even our container IP is on container network, our machine (computer) is not on the container network. 
+# but if we set the request from kubernetes pod, the request will succeed. becouse the can communicate by default.
+
+# 6. Host Port:        0/TCP
+# Check them in next lesson
+
+# 7. QoS Class:        BestEffort
+# this means that we didnt define our resource requests. so the kuberneteswill assign to any availble pod. 

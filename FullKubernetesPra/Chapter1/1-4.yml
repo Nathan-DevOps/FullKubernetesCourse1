@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mypod4
+  labels:
+    app: webserver
+
+spec:
+  containers:
+  - name: mycontainer4
+    image: nginx:latest
+    resources:
+      requests:
+# Request sets the minimum required resources to schedule the pod onto a node
+        memory: "128Mi"
+        cpu: "500m"
+      limits:
+# limit is the maximum amount of resources you want the node to ever give the pod
+        memory: "128Mi"
+        cpu: "500m"
+    ports:
+      - containerPort: 80
+
+
+
+
+
+
+
+
+
+# COMMAND COMMAND WE USED IN THIS FILE.
+# 1. kubectl create -f 1-2.yml
+# 3. kubectl get pod mypod2
+# 2. kubectl describe pod mypod2
+# 3. kubectl describe pod | more
+
+
+
+
+# INFORMATION WE GET WHILE WE RUN THE COMMAND "kubectl describe pod"
+# 1. Namespace:        default
+# Our pod is grouped under namespace "default"
+
+# 2. Status:           Running
+# The image and container are ready
+
+# 3. IP:               10.244.0.18
+# This is our "Pod IP" No matter how many containers we have in one pods, we have only one IP for that pod.
+
+# 4. Labels:           Labels:           app=webserver
+# as you see now, our resource have labeles.
+
+# 5. Port:             80/TCP
+# this is the port we assign to our docker image.
+# at this point we may think to try to interact with our webserver on the termonal (10.244.0.18:80) or localhost:80. but this is not going to work. why? becouse even our container IP is on container network, our machine (computer) is not on the container network. 
+# but if we set the request from kubernetes pod, the request will succeed. becouse the can communicate by default.
+
+# 6. Host Port:        0/TCP
+# Check them in next lesson
+
+# 7. QoS Class:        Guaranteed
+# this means that we define our resource requests. so the pod will only get assigned when the kubernetes find the node with the resources we requested unless it won't be scheduled until those resources are available.

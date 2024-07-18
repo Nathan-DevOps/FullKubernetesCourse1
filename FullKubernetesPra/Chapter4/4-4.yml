@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: support-tier
+  labels:
+    app: microservices
+    tier: support
+
+spec:
+  containers:
+    - name: couter
+      image: lrakai/microservices:counter-v1
+# Service discovery mechanisms ..... DNS .....  WITH HARD CODE THE PORT INFO
+      env:
+        - name: API_URL
+          value: http://app-tier:service-discovery:8080
+
+# Naming pattern:
+# IP address: <service_name>.<service_namespace>
+# Port: needs to be extracted from SRV DNS record
+
+
+
+
+
+# Service discovery mechanisms ..... DNS .....  WITH ENVAROMENT VARIABLETHE PORT INFO
+    - name: poller
+      image: lrakai/microservices:poller-v1
+      env:
+        - name: API_URL
+          value: http://app-tier:$(APP_TIER_SERVICE_PORT)
+# if the service is in the same namespace, then you can simply only use the service name. The container omits the namespace in this manifest.
+
+# Naming pattern:
+# IP address: <service_name>.<service_namespace>
+# Port: needs to be extracted from SRV DNS record
+
+
+
+
+# ONCE YOU FINISH YOUR CONFIGURATION. RUN BELOW COMMAND
+# 1. kubectl create -f 4-1.yml
+# 2. kubectl create -n service-discovery -f 4-2.yml
+# 3. kubectl create -n service-discovery -f 4-3.yml
+# 4. kubectl create -n service-discovery -f 4-4.yml
+# 5. kubectl logs  -n service-discovery support-tier poller -f    ......   This command is used to show you if the application is running as expected or not.
+
